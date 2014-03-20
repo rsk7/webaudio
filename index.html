@@ -3,17 +3,23 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>webaudio</title>
-		<script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
-		<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-		<script src="underscore.js" type="text/javascript"></script>
-		<script src="raphael-min.js" type="text/javascript"></script>
-		<script src="key_codes.js" type="text/javascript"></script>
-		<script src="color_list.js" type="text/javascript"></script>
-		<script src="note_char_binding.js" type="text/javascript"></script>
-		<script src="notes.js" type="text/javascript"></script>
-		<script src="grays.js" type="text/javascript"></script>
-		<script src="webaudio.js" type="text/javascript"></script>
+        <script data-main="js/main" src="js/lib/require.js"></script>
 	</head>
 	<body>
 	</body>
-</html>
+    <script type="text/template" id="box">
+        <div style="height: <%= height %>px; 
+                    width: <%= width %>px;
+                    padding: <%= padding %>px;
+                    border-radius: <%= radius %>px;
+                    background-color: <%= borderColor %>;
+                    margin: <%= margin %>;
+                    display: inline-block;">
+            <div style="height: 100%;
+                        width: 100%;
+                        background-color: <%= color %>;
+                        border-radius: <%= radius %>px;">
+            </div>
+        </div>
+    </script>
+</html>

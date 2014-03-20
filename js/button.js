@@ -2,7 +2,7 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'color_list'
+    'data/color_list'
 ], function($, _, Backbone, Colors) {
     
     var Button = Backbone.View.extend({

@@ -1,7 +1,7 @@
 define([
     'underscore',
     'backbone',
-    'note_data',
+    'data/note_data',
 ], function(_, Backbone, noteData) {
     
     var soundContext = (function(){

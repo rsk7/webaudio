@@ -7,7 +7,7 @@ define([
     var soundContext = (function(){
         if(typeof AudioContext === 'function') {
             return new AudioContext();
-        } else if (typeof webAudioContext === 'function') {
+        } else if (typeof webkitAudioContext === 'function') {
             return new webkitAudioContext();
         } else {
             throw new Error("Could not context audio");
@@ -82,6 +82,10 @@ define([
         }
     });
     
+    var getOctave = function(octave){
+        return _.where(noteData, {octave: octave});
+    };
+    
     var Notes = Backbone.Collection.extend({
         model: Note
     });
@@ -91,7 +95,7 @@ define([
         
         initialize: function(models, options) {
             this.octv = options.octave;
-            _.each(NoteData.getOctave(this.octv),
+            _.each(getOctave(this.octv),
                    this.createNote,
                    this);
         },
@@ -108,7 +112,6 @@ define([
     return {
         Note: Note,
         Notes: Notes,
-        NoteData: NoteData,
         Octave: Octave
     };
 });

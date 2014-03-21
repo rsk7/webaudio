@@ -2,12 +2,12 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'data/color_list',
-    'text!templates/button.html'
-], function($, _, Backbone, Colors, btnTemplate) {
+    'data/color_list'
+    // 'text!../button.html'
+], function($, _, Backbone, Colors) {
     
     var Button = Backbone.View.extend({
-        template: _.template(btnTemplate),
+        template: _.template($("#box").html()),
         height: 50,
         width: 50,
         padding: 5,
@@ -19,7 +19,7 @@ define([
             this.container = options.container;
             this.listenTo(this.model, "change:ison", this.render);
             this.onColor = Colors.randomColor();
-            this.offColor = #FFFFFF;
+            this.offColor = "#FFFFFF";
         },
         
         update: function(){

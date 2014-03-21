@@ -22,7 +22,7 @@ define([
         this.vca = soundContext.createGain();
         this.vca.gain.value = 0;
         this.vco.connect(this.vca);
-        this.vca.connect(soundContext.destiation);
+        this.vca.connect(soundContext.destination);
         this.on = false;
     };
     

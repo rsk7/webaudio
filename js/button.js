@@ -42,21 +42,26 @@ define([
         width: 4,
         buttonCount: 0,
         
+        initialize: function(options) {
+            this.container = options.container;
+            this.buttons = options.buttons;
+        },
+        
         addButton: function(button){
             buttonCount++;
             this.options.el.append(button.render());
             if(buttonCount % 3 === 0) {
-                this.break();
+                this.br();
             }
         },
         
-        breaK: function() {
+        br: function() {
             this.el.append("<br/>");
         },
         
         render: function() {
-            this.options.container.append(this.el);
-            _.each(this.options.buttons, 
+            this.container.append(this.el);
+            _.each(this.buttons, 
                    this.addButton, 
                    this);
         }

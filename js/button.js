@@ -2,11 +2,12 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'data/color_list'
-], function($, _, Backbone, Colors) {
+    'data/color_list',
+    'text!templates/button.html'
+], function($, _, Backbone, Colors, btnTemplate) {
     
     var Button = Backbone.View.extend({
-        template: _.template($("#box").html()),
+        template: _.template(btnTemplate),
         height: 50,
         width: 50,
         padding: 5,

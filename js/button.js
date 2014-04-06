@@ -60,10 +60,10 @@ define([
         },
         
         render: function() {
-            this.container.append(this.el);
             _.each(this.buttons, 
-                   this.addButton, 
+                   this.addButton,
                    this);
+            this.container.append(this.el);
         }
     });
     

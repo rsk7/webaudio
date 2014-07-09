@@ -1,3 +1,4 @@
+/* global require */
 require.config({
     paths: {
         jquery: 'lib/jquery',

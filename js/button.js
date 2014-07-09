@@ -1,3 +1,4 @@
+/* global define */
 define([
     'jquery',
     'underscore',
@@ -6,24 +7,27 @@ define([
     // 'text!../button.html'
 ], function($, _, Backbone, Colors) {
     
-    var Button = Backbone.View.extend({
-        template: _.template($("#box").html()),
+    var buttonDefaults = {
         height: 50,
-        width: 50,
-        padding: 5,
+        width: 50, 
+        padding: 5, 
         radius: 4,
         margin: 4,
         borderColor: "#C8C8C8",
+        offColor: "#FFFFFF"
+    };
+    
+    var Button = Backbone.View.extend({
+        template: _.template($("#box").html()),
         
-        initialize: function(options) {
-            this.container = options.container;
-            this.listenTo(this.model, "change:ison", this.render);
+        initialize: function() {
+            $.extend(this, buttonDefaults);
+            this.listenTo(this.model, "change:on", this.render);
             this.onColor = Colors.randomColor();
-            this.offColor = "#FFFFFF";
         },
         
         update: function(){
-            if(this.model.ison) {
+            if(this.model.get('on')) {
                 this.color = this.onColor;
             } else {
                 this.color = this.offColor;
@@ -32,8 +36,8 @@ define([
         
         render: function() {
             this.update();
-            this.container.append(
-                this.template(this));
+            this.$el.html(this.template(this));
+            return this;
         }
     });
     
@@ -43,14 +47,13 @@ define([
         buttonCount: 0,
         
         initialize: function(options) {
-            this.container = options.container;
             this.buttons = options.buttons;
         },
         
         addButton: function(button){
-            buttonCount++;
+            this.buttonCount++;
             this.options.el.append(button.render());
-            if(buttonCount % 3 === 0) {
+            if(this.buttonCount % 3 === 0) {
                 this.br();
             }
         },

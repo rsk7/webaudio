@@ -1,3 +1,4 @@
+/* global define */
 define([
 ], function() {
     var note_char_binding = {

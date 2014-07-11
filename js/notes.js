@@ -19,13 +19,17 @@ define([
         },
         
         play: function() {
-            this.sound.play(this.get('freq'));
-            this.set('on', true);
+            if(!this.get('on')) {
+                this.sound.play(this.get('freq'));
+                this.set('on', true);
+            }
         },
         
         stop: function() {
-            this.set('on', false);
-            this.sound.stop();
+            if(this.get('on')) {
+                this.set('on', false);
+                this.sound.stop();
+            }
         }
     });
     

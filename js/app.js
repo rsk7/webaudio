@@ -4,26 +4,25 @@ define([
     'underscore',
     'button',
     'notes', 
-    'sound'
-], function($, _, View, Model, Sound) {
+    'sound',
+    'keyboard'
+], function($, _, View, Model, Sound, Keyboard) {
     var initialize = function() {
+        var octaves = [
+            Model.createOctave(3),
+            Model.createOctave(4)
+        ];
         
-        var noteA = new Model.Note({
-            note : 'A', 
-            octv :	4, 
-            freq : 440	 
+        _.each(octaves, function(octave) {
+            octave.each(function(note) {
+                var button = new View.Button({ model: note });
+                $('body').append(button.render().$el);
+            });
         });
         
-        var octave = Model.createOctave(2);
-        var buttonA = new View.Button({ model: noteA });
-        
-        $('body').append(buttonA.render().$el);
-        
-        window.noteA = noteA;
-        window.buttonB = buttonA;
-        window.sound = Sound;
-        window.octave = octave;
-        window.createOctave = Model.createOctave;
+        var keyboard = Keyboard.create(octaves);
+        $(window).on('keydown', keyboard.getKeydownHandler());
+        $(window).on('keyup', keyboard.getKeyupHandler());
     };
     
     return {

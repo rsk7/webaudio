@@ -14,10 +14,12 @@ define([
         ];
         
         _.each(octaves, function(octave) {
+            var octaveDiv = $('<div/>', { 'class' : 'octave' });
             octave.each(function(note) {
                 var button = new View.Button({ model: note });
-                $('body').append(button.render().$el);
+                octaveDiv.append(button.render().$el);
             });
+            octaveDiv.appendTo($('body'));
         });
         
         var keyboard = Keyboard.create(octaves);

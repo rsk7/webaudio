@@ -6,37 +6,29 @@ define([
     'data/color_list'
     // 'text!../button.html'
 ], function($, _, Backbone, Colors) {
-    
-    var buttonDefaults = {
-        height: 50,
-        width: 50, 
-        padding: 5, 
-        radius: 4,
-        margin: 4,
-        borderColor: "#C8C8C8",
-        offColor: "#FFFFFF"
-    };
-    
-    var Button = Backbone.View.extend({
-        template: _.template($("#box").html()),
-        
+
+    var Button = Backbone.View.extend({        
         initialize: function() {
-            $.extend(this, buttonDefaults);
+            this.onCss = 'on';
             this.listenTo(this.model, "change:on", this.render);
             this.onColor = Colors.randomColor();
+            this.innerDiv = $("<div/>");
         },
         
         update: function(){
             if(this.model.get('on')) {
-                this.color = this.onColor;
+                this.innerDiv.css({"background-color" : this.onColor});
+                this.$el.addClass("on");
             } else {
-                this.color = this.offColor;
+                this.innerDiv.css({"background-color" : ""});
+                this.$el.removeClass("on");
             }
         },
         
         render: function() {
             this.update();
-            this.$el.html(this.template(this));
+            this.$el.addClass("button");
+            this.$el.html(this.innerDiv);
             return this;
         }
     });

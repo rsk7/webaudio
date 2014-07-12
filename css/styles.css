@@ -1,3 +1,36 @@
-div {
+div.button {
+    height: 50px;
+    width: 50px;
+    border-radius: 4px;
+    background-color: #C8C8C8;
+    margin: 4px;
+    padding: 5px;
+    vertical-align: top;
+}
+
+div.button > div {
+    height: 100%;
+    width: 100%;
+    background-color: #FFFFFF;
+    border-radius: 4px;
+}
+
+div.button.on > div {
+    
+}
+
+div.octave {
+    width: 275px;
+    display: inline-block;
+    border: 1px solid #C8C8C8;
+    margin: 10px;
+}
+
+div.octave > div {
     display: inline-block;
 }
+
+body {
+    text-align: center;
+}
+

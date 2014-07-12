@@ -9,14 +9,31 @@ define([
 
     var Button = Backbone.View.extend({        
         initialize: function() {
-            this.onCss = 'on';
+            this.onCss = "on";
             this.listenTo(this.model, "change:on", this.render);
             this.onColor = Colors.randomColor();
             this.innerDiv = $("<div/>");
         },
         
+        events: {
+            "mousedown" : "buttonPress",
+            "mouseup"   : "buttonRelease",
+            "mouseout"  : "buttonRelease",
+            "touchstart": "buttonPress",
+            "touchstop" : "buttonRelease",
+            "touchend"  : "buttonRelease"
+        },
+        
+        buttonPress: function(){
+            this.model.play();
+        },
+        
+        buttonRelease: function() {
+            this.model.stop();
+        },
+        
         update: function(){
-            if(this.model.get('on')) {
+            if(this.model.get("on")) {
                 this.innerDiv.css({"background-color" : this.onColor});
                 this.$el.addClass("on");
             } else {

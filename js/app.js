@@ -47,6 +47,8 @@ define([
         $(window).on('keyup',    noteReleaseHandler);
         $(window).on('keydown', toggleNoteNameHandler);
         $(window).on('keydown', octaveSwitchHandler);
+        
+        $("h4").on("click", window.toggleNoteNames);
     };
     
     return {

@@ -4,15 +4,15 @@ define([
     'underscore',
     'backbone',
     'data/color_list'
-    // 'text!../button.html'
 ], function($, _, Backbone, Colors) {
 
-    var Button = Backbone.View.extend({        
+    var View = {};
+    
+    View.Button = Backbone.View.extend({        
         initialize: function() {
             this.onCss = "on";
-            this.listenTo(this.model, "change:on", this.render);
+            this.listenTo(this.model, "change:on", this.update);
             this.onColor = Colors.randomColor();
-            this.innerDiv = $("<div/>");
         },
         
         events: {
@@ -34,53 +34,84 @@ define([
         
         update: function(){
             if(this.model.get("on")) {
-                this.innerDiv.css({"background-color" : this.onColor});
+                this.$el.css({"background-color" : this.onColor});
                 this.$el.addClass("on");
+                this.trigger("on", this.onColor);
             } else {
-                this.innerDiv.css({"background-color" : ""});
+                this.$el.css({"background-color" : ""});
                 this.$el.removeClass("on");
+                this.trigger("off");
             }
+        },
+        
+        displayNoteName: function() {
+            this.$el.append(this.model.get("note") + this.model.get("octv"));
+        },
+        
+        hideNoteName: function() {
+            this.$el.html("");
         },
         
         render: function() {
             this.update();
             this.$el.addClass("button");
-            this.$el.html(this.innerDiv);
             return this;
         }
     });
     
-    var OctaveGroup = Backbone.View.extend({
-        
-        width: 4,
-        buttonCount: 0,
-        
-        initialize: function(options) {
-            this.buttons = options.buttons;
+    View.OctaveBoard = Backbone.View.extend({
+        initialize: function() {
+            this.buttons = this.model.map(function(note) {
+                var button = new View.Button({model: note});
+                this.listenTo(button, "on", this.on);
+                this.listenTo(button, "off" , this.off);
+                return button;
+            }, this);
+            this.offShadow = this.$el.css("box-shadow");
         },
         
-        addButton: function(button){
-            this.buttonCount++;
-            this.options.el.append(button.render());
-            if(this.buttonCount % 3 === 0) {
-                this.br();
+        on: function(color){
+            this.$el.css({"box-shadow" : "0px 2px 30px 5px " + color});
+        },
+        
+        off: function(){
+            this.$el.css({"box-shadow" : this.offShadow});
+        },
+        
+        noteNamesDisplayed: false,
+        
+        toggleNoteNames: function() {
+            this.noteNamesDisplayed = !this.noteNamesDisplayed;
+            if(this.noteNamesDisplayed) {
+                this.displayNoteNames();
+            } else {
+                this.hideNoteNames();
             }
         },
         
-        br: function() {
-            this.el.append("<br/>");
+        displayNoteNames: function() {
+            _.each(this.buttons, function(button) {
+                button.displayNoteName();
+            });
+        },
+        
+        hideNoteNames: function() {
+            _.each(this.buttons, function(button) {
+                button.hideNoteName();
+            });
         },
         
         render: function() {
-            _.each(this.buttons, 
-                   this.addButton,
-                   this);
-            this.container.append(this.el);
+            this.$el.addClass("octave").addClass("shadow");
+            _.each(this.buttons, function(button) {
+                this.$el.append(button.render().$el);
+            }, this);
+            return this;
         }
     });
     
     return {
-        Button: Button,
-        OctaveGroup: OctaveGroup
+        Button: View.Button,
+        OctaveBoard: View.OctaveBoard
     };
 });

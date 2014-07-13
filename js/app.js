@@ -3,28 +3,40 @@ define([
     'jquery',
     'underscore',
     'button',
-    'notes', 
-    'sound',
+    'notes',
     'keyboard'
-], function($, _, View, Model, Sound, Keyboard) {
+], function($, _, View, Model, Keyboard) {
     var initialize = function() {
         var octaves = [
             Model.createOctave(3),
             Model.createOctave(4)
         ];
         
-        _.each(octaves, function(octave) {
-            var octaveDiv = $('<div/>', { 'class' : 'octave' });
-            octave.each(function(note) {
-                var button = new View.Button({ model: note });
-                octaveDiv.append(button.render().$el);
-            });
-            octaveDiv.appendTo($('body'));
+        var octaveBoards = _.map(octaves, function(octave) {
+            return new View.OctaveBoard({model: octave});
         });
         
+        _.each(octaveBoards, function(board) {
+            $('body').append(board.render().$el);
+        });
+                
+        window.toggleNoteNames = function() {
+            _.each(octaveBoards, function(board) {
+                board.toggleNoteNames();
+            });
+        };
+        
         var keyboard = Keyboard.create(octaves);
-        $(window).on('keydown', keyboard.getKeydownHandler());
-        $(window).on('keyup', keyboard.getKeyupHandler());
+        
+        var notePressHandler = keyboard.getKeydownHandler();
+        var noteReleaseHandler = keyboard.getKeyupHandler();
+        var toggleNoteNameHandler = keyboard.getToggleNoteNameHandler(window.toggleNoteNames);
+        var octaveSwitchHandler = keyboard.getOctaveSwitchHandler();
+        
+        $(window).on('keydown',  notePressHandler);
+        $(window).on('keyup',    noteReleaseHandler);
+        $(window).on('keydown', toggleNoteNameHandler);
+        $(window).on('keydown', octaveSwitchHandler);
     };
     
     return {

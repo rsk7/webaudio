@@ -5,19 +5,7 @@ define([
     'data/key_codes',
     'data/note_char_binding'
 ], function($, _, KeyCodeData, NoteCharBindingData){
-    
-    var invertObject = function(obj) {
-        var newObj = {};
-        for(var prop in obj) {
-            if(obj.hasOwnProperty(prop)) {
-                newObj[obj[prop]] = prop;
-            }
-        }
-        return newObj;
-    };
-    
-    var invertedKeyCodeData = invertObject(KeyCodeData);
-    
+
     var OctaveBoard = function(octave, binding) {
         this.octave = octave;
         this.binding = binding;
@@ -34,11 +22,11 @@ define([
     };
 
     OctaveBoard.prototype._keydownHandler = function(event) {
-        this._keyToActionResolver(invertedKeyCodeData[event.which], 'play');
+        this._keyToActionResolver(KeyCodeData.KeyNumberName[event.which], 'play');
     };
 
     OctaveBoard.prototype._keyupHandler = function(event) {
-        this._keyToActionResolver(invertedKeyCodeData[event.which], 'stop');
+        this._keyToActionResolver(KeyCodeData.KeyNumberName[event.which], 'stop');
     };
     
     var Keyboard = function(leftOctave, rightOctave) {
@@ -62,6 +50,28 @@ define([
                board._keyupHandler(event);
            });
         }, this);
+    };
+    
+    Keyboard.prototype.getToggleNoteNameHandler = function(logic) {
+        return function(event) {
+            if(KeyCodeData.KeyNumberName[event.which] === '1') {
+                logic();
+            }
+        };
+    };
+    
+    Keyboard.prototype.getOctaveSwitchHandler = function(logic) {
+        return function(event) {
+            if (event.shiftKey && KeyCodeData.KeyNumberName[event.which] === 'g') {
+                logic.leftShiftUp();
+            } else if (KeyCodeData.KeyNumberName[event.which] === 'g') {
+                logic.leftShiftDown();
+            } else if (event.shiftKey && KeyCodeData.KeyNumberName[event.which] === 'h') {
+                logic.rightShiftUp();
+            } else if (KeyCodeData.KeyNumberName[event.which] === 'h') {
+                logic.rightShiftDown();
+            }
+        };
     };
     
     var Factory = function(octaves) {

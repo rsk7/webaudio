@@ -1,7 +1,7 @@
 /* global define */
 define([
 ], function() {
-    return {
+    var nameNumber = {
         'backspace' : 8,
         'tab' : 9,
         'enter' : 13,
@@ -100,5 +100,23 @@ define([
         'backslash' : 220,
         'closebracket' : 221,
         'single_quote' : 222
+    };
+    
+        
+    var invertObject = function(obj) {
+        var newObj = {};
+        for(var prop in obj) {
+            if(obj.hasOwnProperty(prop)) {
+                newObj[obj[prop]] = prop;
+            }
+        }
+        return newObj;
+    };
+    
+    var numberName = invertObject(nameNumber);
+    
+    return {
+        KeyNameNumber : nameNumber,
+        KeyNumberName : numberName
     };
 });

@@ -61,6 +61,7 @@ define([
     
     View.OctaveBoard = Backbone.View.extend({
         initialize: function() {
+            this.listenTo(this.model, "change:octave", this.displayNoteNames);
             this.buttons = this.model.map(function(note) {
                 var button = new View.Button({model: note});
                 this.listenTo(button, "on", this.on);
@@ -82,14 +83,19 @@ define([
         
         toggleNoteNames: function() {
             this.noteNamesDisplayed = !this.noteNamesDisplayed;
+            this.displayNoteNames();
+        },
+        
+        displayNoteNames: function() {
             if(this.noteNamesDisplayed) {
-                this.displayNoteNames();
+                this.hideNoteNames();
+                this.showNoteNames();
             } else {
                 this.hideNoteNames();
             }
         },
         
-        displayNoteNames: function() {
+        showNoteNames: function() {
             _.each(this.buttons, function(button) {
                 button.displayNoteName();
             });

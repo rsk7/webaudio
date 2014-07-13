@@ -34,19 +34,49 @@ define([
     });
     
     var Notes = Backbone.Collection.extend({
-        model: Note
+        model: Note,
+        
+        createOctave : function(octave) {
+            this.octave = octave;
+            var noteData = _.where(NoteData, {octave: octave});
+            this.reset();
+            _.each(noteData, function(data) {
+                this.add({
+                    note: data.name,
+                    octv: data.octave,
+                    freq: data.frequency
+                });
+            }, this);
+        },
+        
+        switchOctaveUp : function() {
+            this.switchOctave(++this.octave);
+            this.octave = this.at(0).get("octv");
+        },
+        
+        switchOctaveDown: function() {
+            this.switchOctave(--this.octave);
+            this.octave = this.at(0).get("octv");
+        },
+        
+        switchOctave : function(octave) {
+            var noteData = _.where(NoteData, {octave: octave});
+            if(noteData !== undefined && noteData.length !== 0) {
+                this.each(function(note) {
+                    var data = _.findWhere(noteData, {name: note.get("note")});
+                    note.set({
+                        octv: data.octave, 
+                        freq: data.frequency
+                    });
+                });
+            }
+            this.trigger("change:octave");
+        }
     });
     
     var createOctave = function(octave){
         var notes = new Notes();
-        var noteData = _.where(NoteData, {octave: octave});
-        _.each(noteData, function(data) {
-            notes.add({
-                note: data.name,
-                octv: data.octave,
-                freq: data.frequency
-            });
-        });
+        notes.createOctave(octave);
         return notes;
     };
     

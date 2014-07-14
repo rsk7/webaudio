@@ -1,4 +1,4 @@
-/* global define */
+/* global define, window */
 define([
     'jquery',
     'underscore',
@@ -60,8 +60,11 @@ define([
     });
     
     View.OctaveBoard = Backbone.View.extend({
-        initialize: function() {
-            this.listenTo(this.model, "change:octave", this.displayNoteNames);
+        initialize: function(options) {
+            this.tiltCss = options.tiltCss;
+            this.reverseTiltCss = options.reverseTiltCss;
+            this.$el.addClass(options.customCss);
+            this.listenTo(this.model, "change:octave", this.updateOctaveChange);
             this.buttons = this.model.map(function(note) {
                 var button = new View.Button({model: note});
                 this.listenTo(button, "on", this.on);
@@ -93,6 +96,15 @@ define([
             } else {
                 this.hideNoteNames();
             }
+        },
+        
+        updateOctaveChange: function(updateDirection) {
+            var tiltCss = updateDirection === "up" ? this.tiltCss : this.reverseTiltCss;
+            this.$el.addClass(tiltCss);
+            window.setTimeout(_.bind(function() {
+                this.$el.removeClass(tiltCss);
+            }, this), 200);
+            this.displayNoteNames();
         },
         
         showNoteNames: function() {

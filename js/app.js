@@ -7,44 +7,46 @@ define([
     'keyboard'
 ], function($, _, View, Model, Keyboard) {
     var initialize = function() {
-        var leftOctave = Model.createOctave(3);
-        var rightOctave = Model.createOctave(4);
         
-        var octaves = [leftOctave, rightOctave];
-        
-        var octaveBoards = _.map(octaves, function(octave) {
-            return new View.OctaveBoard({model: octave});
+        // create models and views
+        var leftOctave = Model.createOctave(4);
+        var leftOctaveBoard = new View.OctaveBoard({
+            model: leftOctave, 
+            tiltCss: "tilt-left", 
+            reverseTiltCss: "tilt-right",
+            customCss: "left"
         });
         
-        _.each(octaveBoards, function(board) {
-            $('body').append(board.render().$el);
+        var rightOctave = Model.createOctave(5);
+        var rightOctaveBoard = new View.OctaveBoard({
+            model: rightOctave, 
+            tiltCss: "tilt-right", 
+            reverseTiltCss: "tilt-left",
+            customCss: "right"
         });
-                
+        
+        // add views to body
+        $('body').append(leftOctaveBoard.render().$el);
+        $('body').append(rightOctaveBoard.render().$el);
+        
+        // for toggling note names on keys 
+        var octaveBoards = [leftOctaveBoard, rightOctaveBoard];
         window.toggleNoteNames = function() {
             _.each(octaveBoards, function(board) {
                 board.toggleNoteNames();
             });
         };
         
-        window.shiftLeftUp = _.bind(leftOctave.switchOctaveUp, leftOctave);
-        window.shiftLeftDown = _.bind(leftOctave.switchOctaveDown, leftOctave);
-        window.shiftRightUp = _.bind(rightOctave.switchOctaveUp, rightOctave);
-        window.shiftRightDown = _.bind(rightOctave.switchOctaveDown, rightOctave);
-        
-        var keyboard = Keyboard.create(octaves);
+        // keyboard for handling keypress events
+        var keyboard = Keyboard.create(leftOctave, rightOctave);
         
         var notePressHandler = keyboard.getKeydownHandler();
         var noteReleaseHandler = keyboard.getKeyupHandler();
         var toggleNoteNameHandler = keyboard.getToggleNoteNameHandler(window.toggleNoteNames);
-        var octaveSwitchHandler = keyboard.getOctaveSwitchHandler({
-            leftShiftUp : window.shiftLeftUp,
-            leftShiftDown: window.shiftLeftDown,
-            rightShiftUp : window.shiftRightUp,
-            rightShiftDown: window.shiftRightDown
-        });
+        var octaveSwitchHandler = keyboard.getOctaveSwitchHandler();
         
-        $(window).on('keydown',  notePressHandler);
-        $(window).on('keyup',    noteReleaseHandler);
+        $(window).on('keydown', notePressHandler);
+        $(window).on('keyup',   noteReleaseHandler);
         $(window).on('keydown', toggleNoteNameHandler);
         $(window).on('keydown', octaveSwitchHandler);
         

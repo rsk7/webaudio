@@ -52,11 +52,13 @@ define([
         switchOctaveUp : function() {
             this.switchOctave(++this.octave);
             this.octave = this.at(0).get("octv");
+            this.trigger("change:octave", "up");
         },
         
         switchOctaveDown: function() {
             this.switchOctave(--this.octave);
             this.octave = this.at(0).get("octv");
+            this.trigger("change:octave", "down");
         },
         
         switchOctave : function(octave) {
@@ -70,7 +72,6 @@ define([
                     });
                 });
             }
-            this.trigger("change:octave");
         }
     });
     

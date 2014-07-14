@@ -30,10 +30,9 @@ define([
     };
     
     var Keyboard = function(leftOctave, rightOctave) {
-        this.octaveBoards = [
-            new OctaveBoard(leftOctave, NoteCharBindingData.binding.left),
-            new OctaveBoard(rightOctave, NoteCharBindingData.binding.right)
-        ];
+        this.leftOctaveBoard = new OctaveBoard(leftOctave, NoteCharBindingData.binding.left);
+        this.rightOctaveBoard = new OctaveBoard(rightOctave, NoteCharBindingData.binding.right);
+        this.octaveBoards = [this.leftOctaveBoard, this.rightOctaveBoard];
     };
     
     Keyboard.prototype.getKeydownHandler = function() {
@@ -60,22 +59,22 @@ define([
         };
     };
     
-    Keyboard.prototype.getOctaveSwitchHandler = function(logic) {
-        return function(event) {
+    Keyboard.prototype.getOctaveSwitchHandler = function() {
+        return _.bind(function(event) {
             if (event.shiftKey && KeyCodeData.KeyNumberName[event.which] === 'g') {
-                logic.leftShiftUp();
+                this.leftOctaveBoard.octave.switchOctaveUp();
             } else if (KeyCodeData.KeyNumberName[event.which] === 'g') {
-                logic.leftShiftDown();
+                this.leftOctaveBoard.octave.switchOctaveDown();
             } else if (event.shiftKey && KeyCodeData.KeyNumberName[event.which] === 'h') {
-                logic.rightShiftUp();
+                this.rightOctaveBoard.octave.switchOctaveUp();
             } else if (KeyCodeData.KeyNumberName[event.which] === 'h') {
-                logic.rightShiftDown();
+                this.rightOctaveBoard.octave.switchOctaveDown();
             }
-        };
+        }, this);
     };
     
-    var Factory = function(octaves) {
-        return new Keyboard(octaves[0], octaves[1]);
+    var Factory = function(leftOctave, rightOctave) {
+        return new Keyboard(leftOctave, rightOctave);
     };
     
     return {

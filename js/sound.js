@@ -14,7 +14,6 @@ define([], function(){
         this.attackTime = 0.1;
         this.releaseTime = 0.1;
         this.vco = soundContext.createOscillator();
-        this.vco.type = this.vco.SINE;
         this.vca = soundContext.createGain();
         this.vca.gain.value = 0;
         this.vco.connect(this.vca);
@@ -26,6 +25,10 @@ define([], function(){
     sound.prototype.freq = function(f){
         this.vco.frequency.setValueAtTime(f, soundContext.currentTime);
         this.vco.frequency.value = f;
+    };
+    
+    sound.prototype.waveType = function(waveType) {
+        this.vco.type = waveType;
     };
     
     sound.prototype.envelopeStart = function(){

@@ -10,30 +10,28 @@ define([
         
         // create models and views
         var leftOctave = Model.createOctave(4);
-        var leftOctaveBoard = new View.OctaveBoard({
+        var leftButtons = new View.OctaveBoard.Buttons({
+            el: ".left .octave",
             model: leftOctave, 
             tiltCss: "tilt-left", 
             reverseTiltCss: "tilt-right",
-            customCss: "left"
-        });
+            configEl: ".left .config"
+        }).render();
         
         var rightOctave = Model.createOctave(5);
-        var rightOctaveBoard = new View.OctaveBoard({
+        var rightButtons = new View.OctaveBoard.Buttons({
+            el: ".right .octave",
             model: rightOctave, 
             tiltCss: "tilt-right", 
             reverseTiltCss: "tilt-left",
-            customCss: "right"
-        });
-        
-        // add views to body
-        $('body').append(leftOctaveBoard.render().$el);
-        $('body').append(rightOctaveBoard.render().$el);
+            configEl: ".right .config"
+        }).render();
         
         // for toggling note names on keys 
-        var octaveBoards = [leftOctaveBoard, rightOctaveBoard];
+        var octaveBoards = [leftButtons, rightButtons];
         window.toggleNoteNames = function() {
             _.each(octaveBoards, function(board) {
-                board.toggleNoteNames();
+                board.noteNameDisplay.toggleNoteNames();
             });
         };
         

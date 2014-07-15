@@ -45,7 +45,7 @@ define([
         },
         
         displayNoteName: function() {
-            this.$el.append(this.model.get("note") + this.model.get("octv"));
+            this.$el.html(this.model.get("note") + this.model.get("octv"));
         },
         
         hideNoteName: function() {
@@ -59,74 +59,110 @@ define([
         }
     });
     
-    View.OctaveBoard = Backbone.View.extend({
+    View.OctaveBoard = {};
+            
+    View.OctaveBoard.Config = Backbone.View.extend({
+        events : { "change select" : "waveTypeChange" },
+        waveTypeChange: function() {
+            this.model.setWaveType(this.$el.find("select").val());
+            this.$el.find("select").blur();
+        }
+    });
+    
+    View.OctaveBoard.Buttons = Backbone.View.extend({
         initialize: function(options) {
-            this.tiltCss = options.tiltCss;
-            this.reverseTiltCss = options.reverseTiltCss;
-            this.$el.addClass(options.customCss);
-            this.listenTo(this.model, "change:octave", this.updateOctaveChange);
             this.buttons = this.model.map(function(note) {
-                var button = new View.Button({model: note});
-                this.listenTo(button, "on", this.on);
-                this.listenTo(button, "off" , this.off);
-                return button;
-            }, this);
-            this.offShadow = this.$el.css("box-shadow");
-        },
-        
-        on: function(color){
-            this.$el.css({"box-shadow" : "0px 2px 30px 5px " + color});
-        },
-        
-        off: function(){
-            this.$el.css({"box-shadow" : this.offShadow});
-        },
-        
-        noteNamesDisplayed: false,
-        
-        toggleNoteNames: function() {
-            this.noteNamesDisplayed = !this.noteNamesDisplayed;
-            this.displayNoteNames();
-        },
-        
-        displayNoteNames: function() {
-            if(this.noteNamesDisplayed) {
-                this.hideNoteNames();
-                this.showNoteNames();
-            } else {
-                this.hideNoteNames();
-            }
-        },
-        
-        updateOctaveChange: function(updateDirection) {
-            var tiltCss = updateDirection === "up" ? this.tiltCss : this.reverseTiltCss;
-            this.$el.addClass(tiltCss);
-            window.setTimeout(_.bind(function() {
-                this.$el.removeClass(tiltCss);
-            }, this), 200);
-            this.displayNoteNames();
-        },
-        
-        showNoteNames: function() {
-            _.each(this.buttons, function(button) {
-                button.displayNoteName();
+                return new View.Button({model:note});
             });
+            this.setupFeatures(options);
         },
         
-        hideNoteNames: function() {
-            _.each(this.buttons, function(button) {
-                button.hideNoteName();
+        setupFeatures: function(options) {
+            this.shadow = new View.OctaveBoard.Shadow(this);
+            this.octaveShiftTilt = new View.OctaveBoard.OctaveShiftTilt(this, options);
+            this.noteNameDisplay = new View.OctaveBoard.NoteNameDisplay(this);
+            this.config = new View.OctaveBoard.Config({
+                model: this.model, 
+                el: options.configEl
             });
         },
         
         render: function() {
-            this.$el.addClass("octave").addClass("shadow");
             _.each(this.buttons, function(button) {
                 this.$el.append(button.render().$el);
             }, this);
             return this;
         }
     });
+        
+    View.OctaveBoard.Shadow = function(buttonsView) {
+        this.buttonsView = buttonsView;
+        this.offShadow = buttonsView.$el.css("box-shadow");
+        _.each(buttonsView.buttons, function(button) {
+            this.listenTo(button, "on", this.on);
+            this.listenTo(button, "off", this.off);
+        }, this);
+    };
+    
+    _.extend(View.OctaveBoard.Shadow.prototype, Backbone.Events);
+    
+    View.OctaveBoard.Shadow.prototype.on = function(color) {
+        this.buttonsView.$el.css({"box-shadow" : "0px 2px 30px 5px " + color});
+    };
+    
+    View.OctaveBoard.Shadow.prototype.off = function() {
+        this.buttonsView.$el.css({"box-shadow" : this.offShadow});
+    };
+    
+    View.OctaveBoard.OctaveShiftTilt = function(buttonsView, options) {
+        this.buttonsView = buttonsView;
+        this.tiltCss = options.tiltCss;
+        this.reverseTiltCss = options.reverseTiltCss;
+        this.listenTo(buttonsView.model, "change:octave", this.updateOctaveChange);
+    };
+    
+    _.extend(View.OctaveBoard.OctaveShiftTilt.prototype, Backbone.Events);
+    
+    View.OctaveBoard.OctaveShiftTilt.prototype.updateOctaveChange = function(updateDirection) {
+        var tiltCss = updateDirection === "up" ? this.tiltCss : this.reverseTiltCss;
+        this.buttonsView.$el.addClass(tiltCss);
+        window.setTimeout(_.bind(function() {
+            this.buttonsView.$el.removeClass(tiltCss);
+        }, this), 200);
+    };
+    
+    View.OctaveBoard.NoteNameDisplay = function(buttonsView) {
+        this.buttonsView = buttonsView;
+        this.noteNamesDisplayed = false;
+        this.listenTo(buttonsView.model, "change:octave", this.displayNoteNames);
+    };
+    
+    _.extend(View.OctaveBoard.NoteNameDisplay.prototype, Backbone.Events);
+    
+    View.OctaveBoard.NoteNameDisplay.prototype.displayNoteNames = function() {
+        if(this.noteNamesDisplayed) {
+            this.showNoteNames();
+        } else {
+            this.hideNoteNames();
+        }
+    };
+    
+    View.OctaveBoard.NoteNameDisplay.prototype.toggleNoteNames = function() {
+        this.noteNamesDisplayed = !this.noteNamesDisplayed;
+        this.displayNoteNames();
+    };
+    
+    View.OctaveBoard.NoteNameDisplay.prototype.showNoteNames = function() {
+        _.each(this.buttonsView.buttons, function(button) {
+            button.displayNoteName();
+        });
+    };
+    
+    View.OctaveBoard.NoteNameDisplay.prototype.hideNoteNames = function() {
+        _.each(this.buttonsView.buttons, function(button) {
+            button.hideNoteName();
+        });
+    };
     
     return {
         Button: View.Button,

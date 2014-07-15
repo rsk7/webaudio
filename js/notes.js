@@ -18,6 +18,10 @@ define([
             this.sound = new Sound.sound();
         },
         
+        setWaveType: function(waveType) {
+            this.sound.waveType(waveType);
+        },
+        
         play: function() {
             if(!this.get('on')) {
                 this.sound.play(this.get('freq'));
@@ -47,6 +51,12 @@ define([
                     freq: data.frequency
                 });
             }, this);
+        },
+        
+        setWaveType: function(waveType) {
+            this.each(function(note) {
+                note.setWaveType(waveType);
+            });
         },
         
         switchOctaveUp : function() {

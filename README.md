@@ -1,4 +1,3 @@
 webaudio
 ========
-
-Demo: http://rsk7.github.io/webaudio/
+http://rsk7.github.io/webaudio/

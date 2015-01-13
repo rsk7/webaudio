@@ -1,4 +1,5 @@
 /* global define */
+// lookup for notes, octaves and frequencies
 define([
 ], function() {
     return [

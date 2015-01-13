@@ -5,11 +5,12 @@ define([
     'button',
     'notes',
     'keyboard'
-], function($, _, View, Model, Keyboard) {
+], function($, _, View, Notes, Keyboard) {
     var initialize = function() {
         
         // create models and views
-        var leftOctave = Model.createOctave(4);
+        var leftOctave = Notes.createOctave(4);
+        
         var leftButtons = new View.OctaveBoard.Buttons({
             el: ".left .octave",
             model: leftOctave, 
@@ -18,7 +19,8 @@ define([
             configEl: ".left .config"
         }).render();
         
-        var rightOctave = Model.createOctave(5);
+        var rightOctave = Notes.createOctave(5);
+        
         var rightButtons = new View.OctaveBoard.Buttons({
             el: ".right .octave",
             model: rightOctave, 

@@ -10,19 +10,16 @@
         <h4>Press 1 or click here to show note names. The g, h, and shift keys switch octaves.</h4>
         <div class="left">
             <div class="octave shadow"></div>
-            <div class="config">
-                <label for="waveType">Wave Type</label>
-                <select name="waveType">
-                    <option value="sine">Sine</option>
-                    <option value="square">Square</option>
-                    <option value="sawtooth">Sawtooth</option>
-                    <option value="triangle">Triangle</option>
-                </select>
-            </div>
+            <div class="config"></div>
         </div>
         <div class="right">
             <div class="octave shadow"></div>
-            <div class="config">
+            <div class="config"></div>
+        </div>
+	</body>
+
+        <script type="text/template" id="config-template">
+            <div class="wave-type-setter">
                 <label for="waveType">Wave Type</label>
                 <select name="waveType">
                     <option value="sine">Sine</option>
@@ -31,6 +28,17 @@
                     <option value="triangle">Triangle</option>
                 </select>
             </div>
-        </div>
-	</body>
+            <div class="harmonic-setter">
+                <label for="harmonics">Harmonics</label>
+                <div class="harmonic-details"></div>
+                <input type="number" placeholder="harmonic number"/>
+                <input type="number" placeholder="harmonic gain"/>
+                <input type="button" value="Add"/>
+            </div>
+            <div class="wave-table-setter">
+                <input type="text" placeholder="Wave table url..."/>
+                <textarea placeholder="or enter wave table..."/>
+                <input type="button" value="Update"/>
+            </div>
+        </script>
 </html>

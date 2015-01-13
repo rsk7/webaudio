@@ -8,6 +8,7 @@ define([
 
     var View = {};
     
+    // This is for a single button
     View.Button = Backbone.View.extend({        
         initialize: function() {
             this.onCss = "on";
@@ -17,9 +18,9 @@ define([
         
         events: {
             "mousedown" : "buttonPress",
+            "touchstart": "buttonPress",
             "mouseup"   : "buttonRelease",
             "mouseout"  : "buttonRelease",
-            "touchstart": "buttonPress",
             "touchstop" : "buttonRelease",
             "touchend"  : "buttonRelease"
         },
@@ -32,6 +33,8 @@ define([
             this.model.stop();
         },
         
+        // add css for on/off events
+        // trigger on event on itself
         update: function(){
             if(this.model.get("on")) {
                 this.$el.css({"background-color" : this.onColor});
@@ -44,14 +47,17 @@ define([
             }
         },
         
+        // Add note names to html
         displayNoteName: function() {
             this.$el.html(this.model.get("note") + this.model.get("octv"));
         },
         
+        // Remove note names from html
         hideNoteName: function() {
             this.$el.html("");
         },
         
+        // calls update
         render: function() {
             this.update();
             this.$el.addClass("button");
@@ -59,13 +65,44 @@ define([
         }
     });
     
+    // This is for 12 buttons
     View.OctaveBoard = {};
-            
+    
+    // The only thing that can be changed in waveType for now
     View.OctaveBoard.Config = Backbone.View.extend({
-        events : { "change select" : "waveTypeChange" },
+        template: _.template($("#config-template").html()),
+
+        events : { 
+            "change .wave-type-setter select" : "waveTypeChange",
+            "click .wave-table-setter input[type='button']" : "waveTableChange"
+        },
+
         waveTypeChange: function() {
             this.model.setWaveType(this.$el.find("select").val());
             this.$el.find("select").blur();
+        },
+
+        waveTableChange: function() {
+            var url = this.$el.find(".wave-table-setter input[text]").val();
+            var table = this.$el.find(".wave-table-setter textarea").val();
+
+            if (table.length > 0) {
+                table = table.replace(/'/g, "\"");
+                table = JSON.parse(table);
+                this.model.setWaveTable(table);
+            } else if (url.length > 0) {
+                $.ajax({
+                    url: url,
+                    dataType: "jsonp"
+                }).done(function(data) {
+                    this.model.setWaveTable(data);
+                });
+            }
+
+        },
+
+        render: function() {
+            this.$el.html(this.template({}));
         }
     });
     
@@ -77,6 +114,7 @@ define([
             this.setupFeatures(options);
         },
         
+        // initializes objects for adding visual (css/html) effects to this view
         setupFeatures: function(options) {
             this.shadow = new View.OctaveBoard.Shadow(this);
             this.octaveShiftTilt = new View.OctaveBoard.OctaveShiftTilt(this, options);
@@ -91,6 +129,7 @@ define([
             _.each(this.buttons, function(button) {
                 this.$el.append(button.render().$el);
             }, this);
+            this.config.render();
             return this;
         }
     });

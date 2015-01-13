@@ -12,7 +12,8 @@ define([], function(){
     
     var sound = function(){
         this.attackTime = 0.1;
-        this.releaseTime = 0.1;
+        this.releaseTime = 0.5;
+        this.amplitude = 1;
         this.vco = soundContext.createOscillator();
         this.vca = soundContext.createGain();
         this.vca.gain.value = 0;
@@ -30,20 +31,31 @@ define([], function(){
     sound.prototype.waveType = function(waveType) {
         this.vco.type = waveType;
     };
+
+    sound.prototype.setWaveTable = function(table) {
+        var length = table.real.length;
+        var real = new Float32Array(length);
+        var imag = new Float32Array(length);
+        for(var i = 0; i < length; i++) {
+            real[i] = table.real[i];
+            imag[i] = table.imag[i];
+        }
+        this.vco.setPeriodicWave(soundContext.createPeriodicWave(real, imag));
+    };
     
     sound.prototype.envelopeStart = function(){
         var now = soundContext.currentTime;
         var attack = now + this.attackTime;
         this.vca.gain.cancelScheduledValues(now);
         this.vca.gain.setValueAtTime(0, now);
-        this.vca.gain.linearRampToValueAtTime(1, attack);
+        this.vca.gain.linearRampToValueAtTime(this.amplitude, attack);
     };
     
     sound.prototype.envelopeStop = function(){
         var now = soundContext.currentTime;
         var release = now + this.releaseTime;
         this.vca.gain.cancelScheduledValues(now);
-        this.vca.gain.setValueAtTime(1, now);
+        this.vca.gain.setValueAtTime(this.amplitude, now);
         this.vca.gain.linearRampToValueAtTime(0, release);
     };
     
@@ -58,5 +70,5 @@ define([], function(){
         this.envelopeStop();
     };
     
-    return { sound: sound };
+    return sound; 
 });

@@ -3,8 +3,8 @@ define([
     'underscore',
     'backbone',
     'data/note_data',
-    'sound'
-], function(_, Backbone, NoteData, Sound) {
+    'harmonizer'
+], function(_, Backbone, NoteData, Harmonizer) {
         
     var Note = Backbone.Model.extend({
         defaults: {
@@ -15,16 +15,20 @@ define([
         },
         
         initialize: function() {
-            this.sound = new Sound.sound();
+            this.harmonizer = new Harmonizer();
         },
-        
+
         setWaveType: function(waveType) {
-            this.sound.waveType(waveType);
+            this.harmonizer.setWaveType(waveType);
+        },
+
+        setWaveTable: function(waveTable) {
+            this.harmonizer.setWaveTable(waveTable);
         },
         
         play: function() {
             if(!this.get('on')) {
-                this.sound.play(this.get('freq'));
+                this.harmonizer.play(this.get('freq'));
                 this.set('on', true);
             }
         },
@@ -32,14 +36,36 @@ define([
         stop: function() {
             if(this.get('on')) {
                 this.set('on', false);
-                this.sound.stop();
+                this.harmonizer.stop();
             }
+        },
+        
+        addHarmonic: function(harmonicNumber, intensity) {
+            this.harmonizer.update(harmonicNumber, intensity);
+        },
+        
+        removeHarmonic: function(harmonicNumber) {
+            this.harmonizer.update(harmonicNumber, 0);
         }
+    
     });
+
+
+    // notes is a backbone collection 
+    // with a method to create an octave with
+    // the given octave number. So, it'll populate
+    // the collection with correct note models
+    // (with the correct frequencies for the octave)
+    var createOctave = function(octave){
+        var notes = new Notes();
+        notes.createOctave(octave);
+        return notes;
+    };
     
     var Notes = Backbone.Collection.extend({
         model: Note,
         
+        // octave should be a number
         createOctave : function(octave) {
             this.octave = octave;
             var noteData = _.where(NoteData, {octave: octave});
@@ -56,6 +82,12 @@ define([
         setWaveType: function(waveType) {
             this.each(function(note) {
                 note.setWaveType(waveType);
+            });
+        },
+
+        setWaveTable:function(waveTable) {
+            this.each(function(note) {
+                note.setWaveTable(waveTable);
             });
         },
         
@@ -83,16 +115,8 @@ define([
                 });
             }
         }
-    });
+    }, { createOctave: createOctave });
     
-    var createOctave = function(octave){
-        var notes = new Notes();
-        notes.createOctave(octave);
-        return notes;
-    };
     
-    return {
-        Note: Note,
-        createOctave: createOctave
-    };
+    return Notes;
 });

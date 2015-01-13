@@ -6,11 +6,14 @@ define([
     'data/note_char_binding'
 ], function($, _, KeyCodeData, NoteCharBindingData){
 
+    // This controls what octave note (model) to modify based on what
+    // key was pressed
     var OctaveBoard = function(octave, binding) {
         this.octave = octave;
         this.binding = binding;
     };
     
+    // This is supporting _keydownHandler and _keyupHandler
     OctaveBoard.prototype._keyToActionResolver = function(key, actionName) {
         var noteChar = _.findWhere(this.binding, {character: key});
         if(noteChar !== undefined) {
@@ -29,6 +32,9 @@ define([
         this._keyToActionResolver(KeyCodeData.KeyNumberName[event.which], 'stop');
     };
     
+    // Takes the left and right collection models and calls and play() and stop()
+    // on the right note models based on which keys are pressed
+    // Depends on data from note_char_binding
     var Keyboard = function(leftOctave, rightOctave) {
         this.leftOctaveBoard = new OctaveBoard(leftOctave, NoteCharBindingData.binding.left);
         this.rightOctaveBoard = new OctaveBoard(rightOctave, NoteCharBindingData.binding.right);

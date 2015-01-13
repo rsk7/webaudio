@@ -1,4 +1,5 @@
     /* global define */
+// setup for which keys should map to what notes
 define([
 ], function() {
     var note_char_binding = {

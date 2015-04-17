@@ -10,8 +10,6 @@ define([
         // The value at that index is a sound object
         this.config = [];
         this.update(1, 1);
-        this.update(2, 0.5);
-        this.update(3, 0.25);
     };
     
     // number is the harmonic number
